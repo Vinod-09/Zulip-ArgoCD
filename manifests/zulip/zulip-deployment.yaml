@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zulip
+  namespace: zulip-app
+  labels:
+    app: zulip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zulip
+  template:
+    metadata:
+      labels:
+        app: zulip
+    spec:
+      containers:
+        - name: zulip
+          image: mekumar/zulip:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+            - containerPort: 25
+          env:
+            - name: DB_HOST
+              value: "postgres"
+            - name: DB_HOST_PORT
+              value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: POSTGRES_USER
+            - name: SECRETS_postgres_password
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: POSTGRES_PASSWORD
+            - name: SETTING_MEMCACHED_LOCATION
+              value: "memcached:11211"
+            - name: SETTING_RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: SETTING_REDIS_HOST
+              value: "redis"
+            - name: SECRETS_rabbitmq_password
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: RABBITMQ_PASSWORD
+            - name: SECRETS_memcached_password
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: MEMCACHED_PASSWORD
+            - name: SECRETS_redis_password
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: REDIS_PASSWORD
+            - name: SECRETS_secret_key
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: ZULIP_SECRET_KEY
+            - name: SETTING_EXTERNAL_HOST
+              value: "zulip.example.com"
+            - name: SETTING_ZULIP_ADMINISTRATOR
+              value: "admin@example.com"
+            - name: SETTING_EMAIL_HOST_USER
+              value: "noreply@example.com"
+            - name: SECRETS_email_password
+              valueFrom:
+                secretKeyRef:
+                  name: zulip-secrets
+                  key: EMAIL_PASSWORD
+          volumeMounts:
+            - name: zulip-data
+              mountPath: /data
+      volumes:
+        - name: zulip-data
+          emptyDir: {} 

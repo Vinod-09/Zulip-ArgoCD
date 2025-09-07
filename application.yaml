@@ -2,17 +2,17 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: myapp-argo-application
-  namespace: argocd
+  namespace: zulip
 spec:
   project: default
 
   source:
     repoURL: https://github.com/Vinod-09/Zulip-ArgoCD.git
     targetRevision: HEAD
-    path: manifests
+    path: dev
   destination: 
     server: https://kubernetes.default.svc
-    namespace: zulip-app
+    namespace: zulip
 
   syncPolicy:
     syncOptions:

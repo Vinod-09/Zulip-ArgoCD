@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/Vinod-09/Zulip-ArgoCD.git
-    targetRevision: HEAD
+    targetRevision: main
     path: dev
   destination: 
     server: https://kubernetes.default.svc
